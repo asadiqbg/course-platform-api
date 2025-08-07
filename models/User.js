@@ -23,7 +23,13 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Please add a password"],
     minlength: [6, "Password must be at least 6 characters"],
     select: false
+  },
+  role:{
+    type: String,
+    enum: ['user','admin'],
+    default: 'user'
   }
+
 });
 
 UserSchema.pre("save", async function (next) {
@@ -44,7 +50,7 @@ UserSchema.methods.comparePassword = async function (candidatePassword) {
 
 UserSchema.methods.createToken = function () {
   return jwt.sign(
-    { userId: this._id, name: this.name },
+    { userId: this._id, name: this.name, role: this.role },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_LIFETIME }
   );

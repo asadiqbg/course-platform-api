@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 import express from "express";
 import authRouter from './routes/auth.js'
+import courseRouter from './routes/courses.js'
 import mongoose from "mongoose";
 import cookieParser from 'cookie-parser';
 import errorHandlerMiddleware from './middleware/error-handling.js';
@@ -12,6 +13,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/courses',courseRouter)
 app.use(errorHandlerMiddleware);
 
 const start = async () => {
