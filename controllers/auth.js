@@ -25,7 +25,11 @@ export const login = async(req,res,next) => {
     throw new BadRequestError('Please provide credentials')
   }
   try{
-  const user = await User.findOne({email}).select('+password')
+    const {email,password} = req.body
+    if(!email || !password){
+      throw new BadRequestError('Please provide credentials')
+    }
+    const user = await User.findOne({email}).select('+password')
   if(!user){
     throw new UnauthenticatedError('User not found')
   }
