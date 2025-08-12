@@ -1,9 +1,10 @@
 import { BadRequestError, NotFoundError } from "../errors/index.js";
 import Category from "../models/Category.js";
 import { StatusCodes } from "http-status-codes";
+import { Req, Res, Next } from '../types/aliases';
 
-export const createCategory = async(req,res,next) => {
-  const {name} = req.body
+export const createCategory = async(req: Req,res: Res,next: Next) => {
+  const {name}:{name:string} = req.body
   if(!name) throw new BadRequestError('Please enter a valide name')
   try{
   const category = await Category.create({name})
@@ -13,9 +14,9 @@ export const createCategory = async(req,res,next) => {
   }
 }
 
-export const updateCategory = async(req,res,next)=>{
+export const updateCategory = async(req: Req,res: Res,next: Next)=>{
   const {id} = req.params
-  const {name} = req.body
+  const {name}:{name:string} = req.body
     if (!name) {
       throw new BadRequestError('Please provide a new name for the category');
     }

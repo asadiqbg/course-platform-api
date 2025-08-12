@@ -1,6 +1,7 @@
 import express from 'express'
 import { login, register, logout, me } from '../controllers/auth.js'
 import { unauthorized } from '../middleware/unauthorized.js';
+import { Req, Res, Next } from '../types/aliases';
 
 const router = express.Router()
 

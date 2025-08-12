@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
+import { Req, Res, Next } from '../types/aliases';
 
-const errorHandlingMiddleware = (err, req, res, next) => {
+const errorHandlingMiddleware = (err: any, req: Req, res: Res, next: Next) => {
   const msg = err.message || 'Something went Wrong. Please try again later';
   const statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
   

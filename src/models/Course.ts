@@ -1,7 +1,17 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Model } from 'mongoose';
 import slugify from 'slugify';
 
-const CourseSchema = new mongoose.Schema(
+interface ICourse extends Document {
+  title: string;
+  description: string;
+  price: number;
+  thumbnail?: string;
+  instructor: mongoose.Schema.Types.ObjectId;
+  category: mongoose.Schema.Types.ObjectId;
+  slug: string;
+}
+
+const CourseSchema = new mongoose.Schema<ICourse>(
   {
     title: {
       type: String,
@@ -38,12 +48,12 @@ const CourseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-CourseSchema.pre('save',function (next){
-  if(this.isModified('title')){
-    this.slug = slugify(this.title,{lower:true, strict:true})
+CourseSchema.pre<ICourse>('save', function (this:ICourse & mongoose.Document,next) {
+  if (this.isModified('title')) {
+    this.slug = slugify(this.title, { lower: true, strict: true });
   }
   next();
-})
+});
 
-const Course = mongoose.model('Course', CourseSchema);
+const Course: Model<ICourse> = mongoose.model<ICourse>('Course', CourseSchema);
 export default Course;

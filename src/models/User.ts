@@ -1,8 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from 'jsonwebtoken'
+import * as jwt from 'jsonwebtoken'
 
-const UserSchema = new mongoose.Schema({
+interface IUser {
+  name: string;
+  email: string;
+  password: string;
+  role: 'user' | 'admin';
+  comparePassword(candidatePassword: string): Promise<boolean>;
+  createToken(): string;
+}
+
+const UserSchema = new mongoose.Schema<IUser>({
   name: {
     type: String,
     required: [true, "Please add a name"],
@@ -34,26 +43,29 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (err) {
-    next(err);
+    next(err as Error);
   }
 });
 
-UserSchema.methods.comparePassword = async function (candidatePassword) {
+UserSchema.methods.comparePassword = async function (this:IUser & mongoose.Document,candidatePassword: string): Promise<boolean> {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-UserSchema.methods.createToken = function () {
+UserSchema.methods.createToken = function (this:IUser & mongoose.Document):string {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('FATAL ERROR: JWT_SECRET is not defined in environment variables.');
+  }
   return jwt.sign(
     { userId: this._id, name: this.name, role: this.role },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_LIFETIME }
   );
 };
 
-export default mongoose.model("User", UserSchema);
+const User: Model<IUser> = mongoose.model<IUser>("User", UserSchema);
+
+export default User;
