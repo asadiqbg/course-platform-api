@@ -7,8 +7,12 @@
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/types/global.d.ts",
+    "./src/**/*"
+  ],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,5 +1,12 @@
 // Extend global types for environment variables, Express, JWT, errors, and shared interfaces
 
+
+interface UserPayload {
+  userId: string;
+  name: string;
+  role?: string;
+}
+
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
@@ -18,23 +25,11 @@ declare global {
 
   namespace Express {
     interface Request {
-      user?: {
-        userId: string;
-        name: string;
-        role?: string;
-      };
-      file?: MulterFile;
-      files?: MulterFile[];
-      // Add other custom properties as needed
+      user?: UserPayload;
     }
   }
 
-  interface JwtPayload {
-    userId: string;
-    name: string;
-    role?: string;
-    // Add other JWT fields if needed
-  }
+  interface JwtPayload extends UserPayload {}
 
   interface CustomError extends Error {
     statusCode?: number;
@@ -62,4 +57,5 @@ declare global {
   }
 }
 
-export {};
+
+export{}

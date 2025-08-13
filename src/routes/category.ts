@@ -1,8 +1,8 @@
 import express, { RequestHandler } from "express";
-import { unauthorized } from "../middleware/unauthorized.js";
-import { AuthorizePermissions } from "../middleware/role-authorize.js";
-import { createCategory } from "../controllers/categoryController.js";
-import { Req, Res, Next } from '../types/aliases';
+import { unauthorized } from "../middleware/unauthorized";
+import { AuthorizePermissions } from "../middleware/role-authorize";
+import { createCategory } from "../controllers/categoryController";
+
 
 const router = express.Router();
 

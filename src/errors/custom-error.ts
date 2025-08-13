@@ -1,13 +1,11 @@
-class CustomErrorClass extends Error {
-  statusCode?: number;
-  errors?: unknown;
+import { StatusCodes } from "http-status-codes";
 
-  constructor(message: string, statusCode?: number, errors?: unknown) {
-    super(message);
-    this.statusCode = statusCode;
-    this.errors = errors;
-    Object.setPrototypeOf(this, CustomErrorClass.prototype);
+class CustomAPIError extends Error {
+  statusCode:number
+  constructor(message:string,statusCode:number){
+    super(message)
+    this.statusCode = statusCode
   }
 }
 
-export default CustomErrorClass;
+export default CustomAPIError

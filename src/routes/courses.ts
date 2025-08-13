@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
-import { AuthorizePermissions } from "../middleware/role-authorize.js";
-import { unauthorized } from "../middleware/unauthorized.js";
-import { Req, Res, Next } from '../types/aliases';
+import { AuthorizePermissions } from "../middleware/role-authorize";
+import { unauthorized } from "../middleware/unauthorized";
+
 
 const router = express.Router()
 

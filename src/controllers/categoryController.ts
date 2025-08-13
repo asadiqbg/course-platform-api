@@ -1,7 +1,7 @@
-import { BadRequestError, NotFoundError } from "../errors/index.js";
-import Category from "../models/Category.js";
+import { BadRequestError, NotFoundError } from "../errors/index";
+import Category from "../models/Category";
 import { StatusCodes } from "http-status-codes";
-import { Req, Res, Next } from '../types/aliases';
+import {Req,Res,Next} from '../types/aliases'
 
 export const createCategory = async(req: Req,res: Res,next: Next) => {
   const {name}:{name:string} = req.body
