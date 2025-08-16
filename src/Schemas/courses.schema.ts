@@ -1,6 +1,6 @@
 import {z} from 'zod'
 
-const createCourseSchema  = z.object({
+export const createCourseSchema  = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   price: z.number().positive('Price must be positive'),
