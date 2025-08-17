@@ -2,19 +2,19 @@ import Course from "../models/Course";
 import { BadRequestError, NotFoundError } from "../errors";
 import {Req,Res,Next} from '../types/aliases'
 import { StatusCodes } from "http-status-codes";
-
+import { CreateCourseInput,UpdateCourseInput,courseParamsSchema,courseQuerySchema } from "../Schemas/courses.schema";
 
 export const createCourse = async(req:Req,res:Res,next:Next)=>{
-  const {name}:{name:string} = req.body
-  if(!name || name.trim() === ''){
-    throw new BadRequestError('Please provide name')
-  }
+  const courseData : CreateCourseInput = req.body
+  const {title}:{title:string} = req.body
   try{
-    const existingCourse = await Course.findOne({name:name.trim()})
+    const existingCourse = await Course.findOne({title:title.trim()})
     if(existingCourse){
       throw new BadRequestError('Course already exists')
     }
-    const course = await Course.create(name)
+    const course = await Course.create({...courseData,
+      instructor:req.user?.userId
+    })
     res.status(StatusCodes.OK).json({success:true,msg:'Course created',data:course})
   }catch(err){
     next(err as Error)
