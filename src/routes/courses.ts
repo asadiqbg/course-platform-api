@@ -9,7 +9,7 @@ import { validationBody,validationParams,validationQuery } from "../middleware/v
 const router = express.Router()
 
 router.post('/', unauthorized, AuthorizePermissions('admin'),validationBody(createCourseSchema),createCourse)
-router.patch('/:id', unauthorized, AuthorizePermissions('admin'),validationParams(courseParamsSchema),validationBody(updateCourseSchema),updateCourse)
+router.put('/:id', unauthorized, AuthorizePermissions('admin'),validationParams(courseParamsSchema),validationBody(updateCourseSchema),updateCourse)
 router.delete('/:id', unauthorized, AuthorizePermissions('admin'),validationParams(courseParamsSchema),deleteCourse)
 
 

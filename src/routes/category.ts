@@ -10,6 +10,6 @@ import {createCategorySchema,updateCategorySchema,categoryParamsSchema } from '.
 const router = express.Router();
 
 router.post('/',unauthorized,AuthorizePermissions('admin'),validationBody(createCategorySchema),createCategory)
-router.patch('/:id',unauthorized,AuthorizePermissions('admin'),validationParams(categoryParamsSchema),validationBody(updateCategorySchema),updateCategory)
+router.put('/:id',unauthorized,AuthorizePermissions('admin'),validationParams(categoryParamsSchema),validationBody(updateCategorySchema),updateCategory)
 router.delete('/:id',unauthorized,AuthorizePermissions('admin'),validationParams(categoryParamsSchema),deleteCategory)
 export default router;

@@ -2,16 +2,17 @@ import { BadRequestError, NotFoundError } from "../errors/index";
 import Category from "../models/Category";
 import { StatusCodes } from "http-status-codes";
 import {Req,Res,Next} from '../types/aliases'
+import { CreateCategoryInput,UpdateCategoryInput } from "../Schemas/category.schema";
 
 export const createCategory = async(req: Req,res: Res,next: Next) => {
   const {name}:{name:string} = req.body
-  if(!name) throw new BadRequestError('Please enter a valide name')
+  const categoryData:CreateCategoryInput = req.body
   try{
   const existingCategory = await Category.findOne({name:name.trim()})
   if(existingCategory){
     throw new BadRequestError('Category already exists')
   }
-  const category = await Category.create({name})
+  const category = await Category.create(categoryData)
   res.status(StatusCodes.OK).json({success:true,msg:'Category created',category})
   }catch(err){
     next(err as Error)
@@ -19,16 +20,15 @@ export const createCategory = async(req: Req,res: Res,next: Next) => {
 }
 
 export const updateCategory = async(req: Req,res: Res,next: Next)=>{
-  console.log(req.params, req.body);
-
+  const {name}:CreateCategoryInput = req.body
   const {id} = req.params
   // id is validated in validation middleware
-  const {name}:{name:string} = req.body
+  const categoryData:UpdateCategoryInput = req.body
     if (!name || name.trim()=== '') {
       throw new BadRequestError('Please provide a new name for the category');
     }
     try{
-    const updatedCategory = await Category.findByIdAndUpdate(id, { name },
+    const updatedCategory = await Category.findByIdAndUpdate(id, categoryData,
       { new: true, runValidators: true }
     );
     if(!updatedCategory){
