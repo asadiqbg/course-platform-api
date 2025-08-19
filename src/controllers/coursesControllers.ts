@@ -29,7 +29,7 @@ export const updateCourse = async(req:Req,res:Res,next:Next)=>{
   const {id} = req.params
   // id is validated in validationparam middleware
   if(!title || title.trim()=== ''){
-    throw new BadRequestError('Please provide valid course name')
+    return next(new BadRequestError('Please provide valid course name'))
   }
   try{
     const updatedCourse = await Course.findByIdAndUpdate(id,courseData,{
