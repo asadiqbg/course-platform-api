@@ -2,6 +2,7 @@ import { uploadSingle, uploadMultiple } from './fileUpload';
 import { uploadToCloudinary, uploadMultipleToCloudinary } from '../utils/cloudinaryUpload';
 import BadRequestError from '../errors/Bad-request';
 import {Req,Res,Next} from '../types/aliases'
+import {z} from 'zod'
 
 export const uploadSingleFileToCloudinary = (
   fieldName:string,
@@ -23,8 +24,10 @@ export const uploadSingleFileToCloudinary = (
         return next()
       }
       try{
+        console.log('file ready')
       const cloudinaryResult = await uploadToCloudinary(req.file.path);
       req.cloudinaryFile = cloudinaryResult
+      console.log('file uploaded')
       next()
       }catch(error){
         next (new BadRequestError(`Cloudinary upload error ${error}`))

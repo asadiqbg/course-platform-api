@@ -6,6 +6,7 @@ export const createCourseSchema  = z.object({
   price: z.number().positive('Price must be positive'),
   category: z.string().min(1, 'Category is required'),
   tags: z.array(z.string()).optional()
+   // Note: image field will be handled by multer/cloudinary middleware
 });
 
 export const updateCourseSchema = createCourseSchema.partial(); // All fields optional
@@ -20,6 +21,14 @@ export const courseQuerySchema = z.object({
 export const courseParamsSchema = z.object({
   id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId')
 });
+
+
+export const updateProfileSchema = z.object({
+  name: z.string().min(2).optional(),
+  bio: z.string().max(500).optional()
+  // avatar will be handled by upload middleware
+});
+
 
 export type CreateCourseInput = z.infer<typeof createCourseSchema>;
 export type UpdateCourseInput = z.infer<typeof updateCourseSchema>;

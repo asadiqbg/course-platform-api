@@ -5,7 +5,9 @@ import {z} from 'zod'
 export const validationBody = (schema: z.ZodSchema)=>{
   return (req:Req, res:Res, next:Next)=>{
       try{
+        console.log('this is validation body')
         req.body = schema.parse(req.body)
+        console.log('validation passed')
         next()
       }catch(error){
         if(error instanceof z.ZodError){

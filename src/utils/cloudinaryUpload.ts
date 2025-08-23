@@ -16,12 +16,14 @@ export const uploadToCloudinary = async (
   resourceType: 'image' | 'video' | 'raw' | 'auto' = 'auto'
 ): Promise<CloudinaryUploadResult> => {
   try {
+    console.log('upload ready')
      const result = await cloudinary.uploader.upload(filePath, {
       folder,
       resource_type: resourceType,
       use_filename: true,
       unique_filename: true,
     });
+    console.log('upload successful',result)
 
     // Delete the temporary file after successful upload
     fs.unlinkSync(filePath);
@@ -38,7 +40,7 @@ export const uploadToCloudinary = async (
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
-    throw error;
+    throw error
   }
 };
 

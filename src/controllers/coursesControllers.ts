@@ -7,6 +7,10 @@ import { CreateCourseInput,UpdateCourseInput,CourseParamsInput,CourseQueryInput}
 export const createCourse = async(req:Req,res:Res,next:Next)=>{
   const courseData : CreateCourseInput = req.body
   const {title}:{title:string} = req.body
+  //Get the uploaded files or image from cloudinary
+  const imageUrl = req.cloudinaryFile?.secure_url;
+  const imagePublicId= req.cloudinaryFile?.public_id 
+  console.log('inController',imageUrl)
   //body validated by validationbody middleware thorough ZodSchema
   try{
     const existingCourse = await Course.findOne({title:title.trim()})
@@ -15,7 +19,9 @@ export const createCourse = async(req:Req,res:Res,next:Next)=>{
     }
     //use spreading operator to add instructor field within courseData
     const course = await Course.create({...courseData,
-      instructor:req.user?.userId
+      instructor:req.user?.userId,
+      image: imageUrl,
+      imagePublicId,
     })
     res.status(StatusCodes.OK).json({success:true,msg:'Course created',data:course})
   }catch(err){

@@ -5,7 +5,7 @@ interface ICourse extends Document {
   title: string;
   description: string;
   price: number;
-  thumbnail?: string;
+  image?: string;
   instructor: mongoose.Schema.Types.ObjectId;
   category: mongoose.Schema.Types.ObjectId;
   slug: string;
@@ -27,7 +27,7 @@ const CourseSchema = new mongoose.Schema<ICourse>(
       required: true,
       min: 0,
     },
-    thumbnail: {
+    image: {
       type: String, // can be URL or Cloudinary path
     },
     instructor: {
