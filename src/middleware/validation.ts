@@ -6,6 +6,7 @@ export const validationBody = (schema: z.ZodSchema)=>{
   return (req:Req, res:Res, next:Next)=>{
       try{
         console.log('this is validation body')
+        console.log(req.body)
         req.body = schema.parse(req.body)
         console.log('validation passed')
         next()

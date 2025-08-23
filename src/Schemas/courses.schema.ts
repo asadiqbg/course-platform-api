@@ -3,7 +3,7 @@ import {z} from 'zod'
 export const createCourseSchema  = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
-  price: z.number().positive('Price must be positive'),
+  price: z.coerce.number().positive('Price must be positive'),
   category: z.string().min(1, 'Category is required'),
   tags: z.array(z.string()).optional()
    // Note: image field will be handled by multer/cloudinary middleware

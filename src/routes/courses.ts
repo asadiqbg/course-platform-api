@@ -5,10 +5,12 @@ import { createCourse,updateCourse,deleteCourse } from "../controllers/coursesCo
 import { createCourseSchema,updateCourseSchema,courseParamsSchema,courseQuerySchema} from "../Schemas/courses.schema";
 import { validationBody,validationParams,validationQuery } from "../middleware/validation";
 import { uploadSingleFileToCloudinary } from "../middleware/uploadMiddleware";
+import { uploadSingleFile } from "../middleware/multerMiddleware";
+import { uploadSingleToCloudinary } from "../middleware/cloudinaryMiddleware";
 
 const router = express.Router()
 
-router.post('/', unauthorized, AuthorizePermissions('admin'),uploadSingleFileToCloudinary('image','courses'),validationBody(createCourseSchema),createCourse)
+router.post('/', unauthorized, AuthorizePermissions('admin'),uploadSingleFile('image'),validationBody(createCourseSchema),uploadSingleToCloudinary('courses'),createCourse)
 router.put('/:id', unauthorized, AuthorizePermissions('admin'),validationParams(courseParamsSchema),validationBody(updateCourseSchema),updateCourse)
 router.delete('/:id', unauthorized, AuthorizePermissions('admin'),validationParams(courseParamsSchema),deleteCourse)
 
