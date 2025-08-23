@@ -10,7 +10,7 @@ export interface CloudinaryUploadResult {
   bytes: number;
 }
 
-const uploadToCloudinary = async (
+export const uploadToCloudinary = async (
    filePath: string,
   folder: string = 'uploads',
   resourceType: 'image' | 'video' | 'raw' | 'auto' = 'auto'
@@ -51,6 +51,7 @@ export const uploadMultipleToCloudinary = async(
     uploadToCloudinary(path,folder,resourceType)
   )
   try{
+    //Promise.all resolves all promises concurrently
    return await Promise.all(uploadPromises)
   }catch(err){
     filePaths.forEach((path)=>{
@@ -61,3 +62,7 @@ export const uploadMultipleToCloudinary = async(
     throw err;
   }
 }
+
+export const deleteFromCloudinary = async (publicId: string) => {
+  await cloudinary.uploader.destroy(publicId);
+};

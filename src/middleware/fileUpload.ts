@@ -9,6 +9,7 @@ if(!fs.existsSync(uploadsDir)){
 }
 
 const storage = multer.diskStorage({
+
   destination: (req: Req, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
     cb(null, uploadsDir);
   },
@@ -43,3 +44,17 @@ const upload = multer({
 export const uploadSingle = (fieldName: string) => upload.single(fieldName);
 export const uploadMultiple = (fieldName: string, maxCount: number = 5) => upload.array(fieldName, maxCount);
 export const uploadFields = (fields: { name: string; maxCount: number }[]) => upload.fields(fields);
+
+  //multer writes the file on disk then build the object and attaches the object to req.file
+  /*req.file = {
+  fieldname: 'avatar',               // field name in the form
+  originalname: 'me.png',            // client’s file name
+  encoding: '7bit',
+  mimetype: 'image/png',
+  destination: '/tmp/uploads/',      // folder you configured
+  filename: '1692728283871-me.png',  // new name Multer gave it
+  path: '/tmp/uploads/1692728283871-me.png',  // <-- Multer adds this!
+  size: 12345
+  };
+*/
+//this is then used by cloudinaryupload(fieldname) where fieldname === req.file.path

@@ -1,5 +1,5 @@
 // Extend global types for environment variables, Express, JWT, errors, and shared interfaces
-
+import { CloudinaryUploadResult } from "../utils/cloudinaryUpload";
 
 interface UserPayload {
   userId: string;
@@ -26,6 +26,8 @@ declare global {
   namespace Express {
     interface Request {
       user?: UserPayload;
+      cloudinaryFile?:CloudinaryUploadResult;
+      cloudinaryFiles?:CloudinaryUploadResult[];
     }
   }
 
