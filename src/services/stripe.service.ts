@@ -160,4 +160,73 @@ constructWebhookEvent(payload:string | Buffer,signature:string,webhookSecret:str
   }
 }
 
+ // List all products
+   
+  async listProducts(params?: {
+    limit?: number;
+    starting_after?: string;
+  }): Promise<Stripe.ApiList<Stripe.Product>> {
+    try {
+      return await this.stripe.products.list({
+        limit: params?.limit || 10,
+        starting_after: params?.starting_after,
+      });
+    } catch (error) {
+      throw new Error('Failed to list products');
+    }
+  }
+
+  /**
+   * Create a product
+   */
+  async createProduct(params: {
+    name: string;
+    description?: string;
+    metadata?: Record<string, string>;
+  }): Promise<Stripe.Product> {
+    try {
+      return await this.stripe.products.create({
+        name: params.name,
+        description: params.description,
+        metadata: params.metadata,
+      });
+    } catch (error) {
+      throw new Error('Failed to create product');
+    }
+  }
+
+  /**
+   * Create a price for a product
+   */
+  async createPrice(params: {
+    productId: string;
+    unitAmount: number;
+    currency?: string;
+    recurring?: {
+      interval: 'day' | 'week' | 'month' | 'year';
+      intervalCount?: number;
+    };
+  }): Promise<Stripe.Price> {
+    try {
+      const priceParams: Stripe.PriceCreateParams = {
+        product: params.productId,
+        unit_amount: params.unitAmount,
+        currency: params.currency || 'usd',
+      };
+
+      if (params.recurring) {
+        priceParams.recurring = {
+          interval: params.recurring.interval,
+          interval_count: params.recurring.intervalCount || 1,
+        };
+      }
+
+      return await this.stripe.prices.create(priceParams);
+    } catch (error) {
+      throw new Error('Failed to create price');
+    }
+  }
 }
+
+export default StripeService;
+
