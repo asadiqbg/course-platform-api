@@ -132,3 +132,35 @@ export const handlePaymentSuccess = async(req:Req,res:Res,next:Next):Promise<voi
   }
 }
 
+export const getPaymentHistory = async(req:Req,res:Res,next:Next):Promise<void>=>{
+  try{
+    const userId = req.user?.userId
+    const {page = 1,limit = 10, status} = req.query
+    
+    const query:any = {user:userId}
+    if(status){
+      query.status = status
+    }
+    const orders = await Order.find(query)
+    .populate('course','title price')
+    .sort({createdAt:-1})
+    .limit(Number(limit))
+    .skip((Number(page)-1)*Number(limit))
+
+    const total = await Order.countDocuments(query)
+
+    res.status(200).json({
+      success:true,
+      data:{
+        orders,
+        pagination: {
+          total,
+          page: Number(page),
+          pages: Math.ceil(total / Number(limit)),
+      }
+    }
+    })
+  }catch(error){
+    next(error)
+  }
+}
