@@ -164,3 +164,28 @@ export const getPaymentHistory = async(req:Req,res:Res,next:Next):Promise<void>=
     next(error)
   }
 }
+
+export const cancelPayment = async(req:Req,res:Res,next:Next):Promise<void>=>{
+  try{
+    const userId = req.user?.userId
+    const {orderId} = req.params
+    const order  = await Order.findOne({
+      _id:orderId,
+      user:userId,
+      status:'pending',
+    })
+    if(!order){
+      throw new BadRequestError('Order not found or cannot be cancelled')
+    }
+    order.status = 'completed'
+    order.createdAt = new Date()
+    await order.save()
+    res.status(200).json({
+      success:true,
+      message:'Payment cancelled successfully'
+    })
+  }catch(error){
+    next(error)
+  }
+}
+
