@@ -189,3 +189,59 @@ export const cancelPayment = async(req:Req,res:Res,next:Next):Promise<void>=>{
   }
 }
 
+export const requestRefund = async(req:Req,res:Res,next:Next):Promise<void>=>{
+  try{
+    const userId = req.user?.userId
+    const {orderId}= req.params
+    const {reason} = req.body
+
+    const order = await Order.findOne({
+      _id:orderId,
+      user:userId,
+      status: 'completed'
+    })
+    if(!order){
+      throw new BadRequestError('Order not found or not eligble for refund')
+    }
+    const daysSincePurchase = Math.floor(
+      (Date.now()-(order.completedAt!.getTime())/1000*60*60*24)
+    )
+    if(daysSincePurchase>30){
+      throw new BadRequestError('Refund period has expired(30 days)')
+    }
+    if(!order.paymentIntentId){
+      throw new BadRequestError('Payment information not found')
+    }
+    const refund = await stripeService.createRefund({
+      paymentIntentId: order.paymentIntentId,
+      reason: reason
+    })
+
+    order.status = 'refunded',
+    order.refundedAt = new Date()
+    order.refundId = refund.id
+    order.refundReason = reason
+    await order.save()
+
+    await Course.findByIdAndUpdate(order.course,{
+      $pull:{enrolledStudents:order.user},
+      $inc:{enrollmentCount:-1}
+    })
+
+    await User.findByIdAndUpdate(order.user,{
+      $pull:{purchasedCourses:order.course}
+    })
+
+    res.status(200).json({
+      success:true,
+      message: 'refund processed successfully',
+      data:{
+         refundId: refund.id,
+        amount: refund.amount / 100,
+        status: refund.status,
+      }
+    })
+  }catch(error){
+    next(error)
+  }
+}
