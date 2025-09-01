@@ -78,3 +78,57 @@ export const createCheckoutSesssion = async(req:Req,res:Res,next:Next):Promise<v
 }
 }
 
+export const handlePaymentSuccess = async(req:Req,res:Res,next:Next):Promise<void>=>{
+  //start mongoose session for atomic transaction i.e if one mongoose method fails
+  //within the transaction it will also stop other methods as well
+  const session = await mongoose.startSession()
+  session.startTransaction()
+  try{
+    const {sessionId} = req.query
+    if(!sessionId || typeof sessionId!== 'string'){
+      throw new BadRequestError('Session ID is required')
+    }
+    // retrieve session from stripe
+    const stripeSession = await stripeService.retrieveSession(sessionId)
+    //Find order by sessionId
+    const order = await Order.findOne({stripeSessionId:sessionId})
+    if(!order){
+      throw new BadRequestError('Order not found')
+    }
+    //check and verify paymentIntent
+    if(stripeSession.payment_status==='paid' && order.status==='pending'){
+      const paymentIntent = typeof stripeSession.payment_intent==='string'
+      ?stripeSession.payment_intent
+      :undefined
+      //update Order
+      order.status = 'completed'
+      order.paymentIntentId = paymentIntent
+      order.completedAt = new Date()
+      await order.save({session})
+    }
+    //Enroll user in course
+    await Course.findByIdAndUpdate(order.course,{
+      $addToSet:{enrolledStudents:order.user},
+      $inc:{enrollmentCount: 1},
+    },
+    {session}
+  )
+    //Update User's details
+    await User.findByIdAndUpdate(order.user,{
+      $addToSet:{purchasedCourses:order.course},
+    },
+    {session}
+  )
+  session.commitTransaction()
+  session.endSession()
+  res.status(200).json({success:true,
+    data: order,
+    message: 'Payment proceeded successfully'
+  })
+  }catch(error){
+    session.abortTransaction()
+    session.endSession()
+    next(error)
+  }
+}
+
